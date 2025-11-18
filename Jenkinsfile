@@ -75,32 +75,8 @@ pipeline {
                 }
             }
         }
-        
-        stage('Deploy Staging') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    reuseNode true
-                }
-            }
-            
-            steps {
-                sh '''
-                    npm install node-jq
-                    npm install netlify-cli@20.1.1
-                    node_modules/.bin/netlify --version
-                    echo "Netlify Staging ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > staging-log.json
-                '''
-                
-                script {
-                    env.STAGING_URL = sh(script: 'node_modules/.bin/node-jq -r ".deploy_url" staging-log.json', returnStdout: true);
-                }
-            }
-        }
 
-        stage('Staging E2E') {
+        stage('Deploy Staging') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -109,13 +85,19 @@ pipeline {
             }
 
             environment {
-                CI_ENVIRONMENT_URL="${env.STAGING_URL}"
+                CI_ENVIRONMENT_URL="_" 
             }
 
             steps {
                 echo "STAGING URL: ${env.STAGING_URL}"  
                 sh '''
-                   
+                    npm install node-jq
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
+                    echo "Netlify Staging ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --json > staging-log.json
+                    CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r ".deploy_url" staging-log.json)
                     npx playwright test --reporter=html
                 '''
             }
@@ -135,7 +117,7 @@ pipeline {
             }
         }
 
-        stage('Post E2E Test') {
+        stage('Deploy Prod') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
