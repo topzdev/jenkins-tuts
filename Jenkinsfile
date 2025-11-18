@@ -23,6 +23,13 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
+                    apk add --no-cache \
+                    vips-dev \
+                    build-base \
+                    python3 \
+                    gcc \
+                    g++ \
+                    make
                 '''
             }
         }
