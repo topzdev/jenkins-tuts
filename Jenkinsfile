@@ -23,13 +23,6 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
-                    apk add --no-cache \
-                    vips-dev \
-                    build-base \
-                    python3 \
-                    gcc \
-                    g++ \
-                    make
                 '''
             }
         }
@@ -93,11 +86,11 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli
+                    npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
                     echo "Netlify Staging ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir="build" --no-build
+                    node_modules/.bin/netlify deploy --dir=build
                 '''
             }
         }
@@ -119,11 +112,11 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli
+                    npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
                     echo "Netlify Production ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir="build" --prod --no-build
+                    node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
         }
