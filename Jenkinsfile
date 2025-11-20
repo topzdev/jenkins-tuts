@@ -101,7 +101,7 @@ pipeline {
                     echo "Netlify Staging ID: $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir=build --json > staging-log.json
-                    CI_ENVIRONMENT_URL=$(node-jq -r ".deploy_url" staging-log.json)
+                    CI_ENVIRONMENT_URL=$(jq -r ".deploy_url" staging-log.json)
                     npx playwright test --reporter=html
                 '''
             }
