@@ -3,6 +3,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = 'd366b446-07ad-4f9c-aaa4-d82c455aad32'
         NETLIFY_AUTH_TOKEN = credentials('netlify-secret')
+        APP_VERSION = "1.0.$BUILD_ID"
     }
 
     stages {
@@ -91,8 +92,7 @@ pipeline {
             steps {
                 echo "STAGING URL: ${env.STAGING_URL}"  
                 sh '''
-                    npm install node-jq
-                    npm install netlify-cli@20.1.1
+                    npm install netlify-cli@20.1.1 node-jq
                     node_modules/.bin/netlify --version
                     echo "Netlify Staging ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
@@ -105,14 +105,6 @@ pipeline {
             post {
                 always {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
-                }
-            }
-        }
-
-        stage('Approval') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    input message: 'Proceed to Deploying Production?', ok: 'Yes, Deploy to Production'
                 }
             }
         }
