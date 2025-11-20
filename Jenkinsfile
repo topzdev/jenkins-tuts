@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Docker') {
             steps {
-                sh 'Docker build -t deploy-image .'
+                sh 'docker build -t deploy-image .'
             }
         }
 
