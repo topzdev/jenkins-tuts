@@ -44,7 +44,7 @@ pipeline {
                 }
             }
             
-            env {
+            environment {
                 AWS_S3_BUCKET = 'jenkins-tuts'
             }
 
